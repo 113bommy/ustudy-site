@@ -146,11 +146,14 @@
           <div class="q">${ax.question}</div>
         </div>
         <div class="opts">
-          <label><input type="radio" name="ax_${ax.id}" value="A">A</label>
-          <label><input type="radio" name="ax_${ax.id}" value="B">B</label>
+          <label><input type="radio" name="ax_${ax.id}" value="A" disabled>A</label>
+          <label><input type="radio" name="ax_${ax.id}" value="B" disabled>B</label>
         </div>
       </div>`).join("");
     $("axes").addEventListener("change", updateSubmitState);
+  }
+  function setAxesEnabled(on) {
+    document.querySelectorAll('#axes input[type=radio]').forEach(r => { r.disabled = !on; });
   }
   function clearAxes() {
     document.querySelectorAll('#axes input[type=radio]').forEach(r => { r.checked = false; });
@@ -192,7 +195,9 @@
     $("watchNote").textContent = C.require_full_watch
       ? "Answers unlock after both videos have played to the end."
       : "Watch both videos, then answer below.";
+    $("watchNote").classList.remove("done");
     clearAxes();
+    setAxesEnabled(!C.require_full_watch);
     updateSubmitState();
     tStart = Date.now();
     window.scrollTo({ top: 0 });
@@ -200,6 +205,11 @@
   function markWatched(which) {
     if (which === "A") { watchedA = true; $("stateA").textContent = "Watched ✓"; }
     else { watchedB = true; $("stateB").textContent = "Watched ✓"; }
+    if (watchedA && watchedB) {
+      setAxesEnabled(true);
+      $("watchNote").textContent = "Both videos watched — please answer below. (Replay anytime.)";
+      $("watchNote").classList.add("done");
+    }
     updateSubmitState();
   }
   $("vidA").addEventListener("ended", () => markWatched("A"));

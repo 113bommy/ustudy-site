@@ -5,7 +5,7 @@ window.SURVEY_CONFIG = {
   bases: [
     {
         "id": "rolling_forcing",
-        "label": "RollingForcing",
+        "label": "rolling_forcing",
         "prompts": [
             "000_man_made_rocks",
             "001_man_riding_horse",
@@ -14,7 +14,7 @@ window.SURVEY_CONFIG = {
     },
     {
         "id": "self_forcing",
-        "label": "SelfForcing",
+        "label": "self_forcing",
         "prompts": [
             "000_3d_animation_small",
             "001_beautifully_detailed_papercraft",
@@ -26,7 +26,7 @@ window.SURVEY_CONFIG = {
   ours_id: "ours",
   baselines: ["vanilla", "teacache", "toca", "fast_ar"],
 
-  video_url: "https://huggingface.co/datasets/113bommy/ustudy-a7f3/resolve/main/videos/{base}/{prompt}_{method}.mp4",
+  video_url: "videos/{base}/{prompt}_{method}.mp4",
 
   prompt_texts: {
     "rolling_forcing/000_man_made_rocks": "A man made of rocks walking in the forest, full-body shot.",
@@ -48,6 +48,6 @@ window.SURVEY_CONFIG = {
       question: "Which video better maintains its quality and consistency from beginning to end?" }
   ],
 
-  require_full_watch: false,
+  require_full_watch: true,
   endpoint: "https://script.google.com/macros/s/AKfycbz03sS8CK5g3vwPmSzcwjOCA537Wqchv2DOuje2rteNQw2nkbMjU9rwbM02plWQgxwEBA/exec"
 };

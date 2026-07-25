@@ -66,6 +66,7 @@
   button:disabled{opacity:.38; cursor:not-allowed;}
   button:focus-visible{outline:3px solid var(--accent); outline-offset:2px;}
   .watchnote{font-size:.82rem; color:var(--muted);}
+  .watchnote.done{color:var(--ok); font-weight:600;}
 
   /* axes — compact rows with segmented A/B control */
   .axes{margin-top:14px; border-top:1px solid var(--line);}
@@ -89,6 +90,7 @@
   .opts label:hover{background:var(--paper);}
   .opts label:has(input:checked){background:var(--accent); color:#fff;}
   .opts label:has(input:focus-visible){outline:3px solid var(--accent); outline-offset:-3px;}
+  .opts label:has(input:disabled){cursor:not-allowed; opacity:.4; background:var(--paper);}
   @media (max-width:640px){
     .axis{flex-direction:column; align-items:stretch; gap:8px;}
     .opts{width:100%;}
