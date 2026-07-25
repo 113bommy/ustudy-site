@@ -49,5 +49,5 @@ window.SURVEY_CONFIG = {
   ],
 
   require_full_watch: false,
-  endpoint: ""
+  endpoint: "https://script.google.com/macros/s/AKfycbz03sS8CK5g3vwPmSzcwjOCA537Wqchv2DOuje2rteNQw2nkbMjU9rwbM02plWQgxwEBA/exec"
 };
