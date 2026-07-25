@@ -126,8 +126,13 @@
   /* ---------- UI: entry ---------- */
   $("totalPairs").textContent = buildPairs().length;
   $("startBtn").addEventListener("click", () => {
-    const pid = $("pid").value.trim();
-    if (!pid) { $("pid").focus(); return; }
+    // 이메일을 참가자 ID로 사용: 정규화(공백 제거+소문자)로 표기 편차에 의한
+    // 시드/중복 문제를 방지하고, 간단한 형식 검증을 거친다.
+    const pid = $("pid").value.trim().toLowerCase();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(pid)) {
+      $("pidError").classList.remove("hidden"); $("pid").focus(); return;
+    }
+    $("pidError").classList.add("hidden");
     participant = pid;
     assignment = makeAssignment(pid);
     logManifest();
@@ -186,12 +191,10 @@
     const pt = (C.prompt_texts || {})[`${a.base}/${a.prompt}`] || "";
     $("promptText").textContent = pt ? `“${pt}”` : "";
 
-    vidA().src = a.video_a_file;
-    vidB().src = a.video_b_file;
-    vidA().load(); vidB().load();
+    loadWithRetry(vidA(), a.video_a_file, $("stateA"));
+    loadWithRetry(vidB(), a.video_b_file, $("stateB"));
     watchedA = !C.require_full_watch;
     watchedB = !C.require_full_watch;
-    $("stateA").textContent = "Ready"; $("stateB").textContent = "Ready";
     $("watchNote").textContent = C.require_full_watch
       ? "Answers unlock after both videos have played to the end."
       : "Watch both videos, then answer below.";
@@ -202,6 +205,33 @@
     tStart = Date.now();
     window.scrollTo({ top: 0 });
   }
+  /* HF CDN이 간헐적으로 503을 반환할 수 있어, 영상 로드 실패 시
+     지수 백오프로 최대 3회 자동 재시도한다. */
+  const MAX_RETRY = 3;
+  function loadWithRetry(videoEl, url, stateEl) {
+    videoEl._retries = 0;
+    videoEl._srcUrl = url;
+    videoEl.onerror = () => {
+      if (videoEl._retries < MAX_RETRY) {
+        videoEl._retries += 1;
+        stateEl.textContent = `Retrying (${videoEl._retries}/${MAX_RETRY})…`;
+        const delay = 1500 * videoEl._retries;
+        setTimeout(() => {
+          videoEl.src = url + (url.includes("?") ? "&" : "?") + "r=" + videoEl._retries;
+          videoEl.load();
+        }, delay);
+      } else {
+        stateEl.textContent = "Load failed";
+        $("watchNote").textContent =
+          "A video failed to load after several retries — press \"Replay from start\" to try again, or reload the page.";
+      }
+    };
+    videoEl.onloadeddata = () => { stateEl.textContent = "Ready"; };
+    stateEl.textContent = "Loading…";
+    videoEl.src = url;
+    videoEl.load();
+  }
+
   function markWatched(which) {
     if (which === "A") { watchedA = true; $("stateA").textContent = "Watched ✓"; }
     else { watchedB = true; $("stateB").textContent = "Watched ✓"; }
@@ -220,8 +250,13 @@
     if ($("stateB").textContent === "Ready") $("stateB").textContent = "Playing";
   });
   $("replayBtn").addEventListener("click", () => {
-    vidA().currentTime = 0; vidB().currentTime = 0;
-    vidA().play(); vidB().play();
+    for (const [v, st] of [[vidA(), $("stateA")], [vidB(), $("stateB")]]) {
+      if (v.error || st.textContent === "Load failed") {
+        loadWithRetry(v, v._srcUrl, st);          // 실패한 쪽은 처음부터 재로드
+      } else {
+        v.currentTime = 0; v.play();
+      }
+    }
   });
 
   /* ---------- submit (once per pair) ---------- */
