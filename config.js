@@ -52,13 +52,13 @@ window.SURVEY_CONFIG = {
 
   axes: [
     { id: "overall",  label: "Overall",
-      question: "Considering everything, including visual quality and alignment with the prompt, which video is better overall?" },
+      question: "Taking everything into account — how good it looks and how well it matches the text description — which video is better overall?" },
     { id: "visual",   label: "Visual Quality",
-      question: "Which video has better visual quality (sharpness, detail, fewer artifacts)?" },
+      question: "Which video looks clearer and cleaner? (fewer blurry, messy, or broken-looking parts)" },
     { id: "motion",   label: "Motion Quality",
-      question: "Which video shows smoother, more natural motion (less flicker or stutter)?" },
+      question: "In which video does the movement look smoother and more natural? (less shaky or choppy)" },
     { id: "temporal", label: "Temporal Consistency",
-      question: "Which video better maintains its quality and consistency from beginning to end?" }
+      question: "Which video keeps its quality from beginning to end? (does not become blurrier or fall apart toward the end)" }
   ],
 
   require_full_watch: true,
