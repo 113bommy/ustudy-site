@@ -183,9 +183,12 @@
     const pt = (C.prompt_texts || {})[`${a.base}/${a.prompt}`] || "";
     $("promptText").textContent = pt ? `“${pt}”` : "";
 
+    vidA().src = a.video_a_file;
+    vidB().src = a.video_b_file;
+    vidA().load(); vidB().load();
     watchedA = !C.require_full_watch;
     watchedB = !C.require_full_watch;
-    loadPairVideos(a);
+    $("stateA").textContent = "Ready"; $("stateB").textContent = "Ready";
     $("watchNote").textContent = C.require_full_watch
       ? "Answers unlock after both videos have played to the end."
       : "Watch both videos, then answer below.";
@@ -194,37 +197,6 @@
     tStart = Date.now();
     window.scrollTo({ top: 0 });
   }
-  /* Safari의 media loader가 HF의 서명된 CDN 리다이렉트를 403으로 실패시키므로
-     fetch(일반 네트워크 스택)로 받아 blob URL로 재생한다. Chrome에서도 동일 동작. */
-  let loadToken = 0;
-  async function fetchToVideo(videoEl, url, stateEl, token) {
-    const resp = await fetch(url);
-    if (!resp.ok) throw new Error("HTTP " + resp.status);
-    const blob = await resp.blob();
-    if (token !== loadToken) return;            // 사용자가 이미 다음 문항으로 이동
-    if (videoEl._objUrl) URL.revokeObjectURL(videoEl._objUrl);
-    videoEl._objUrl = URL.createObjectURL(blob);
-    videoEl.src = videoEl._objUrl;
-    stateEl.textContent = "Ready";
-  }
-  function loadPairVideos(a) {
-    const token = ++loadToken;
-    $("playBtn").disabled = true; $("replayBtn").disabled = true;
-    $("stateA").textContent = "Loading…"; $("stateB").textContent = "Loading…";
-    Promise.all([
-      fetchToVideo(vidA(), a.video_a_file, $("stateA"), token),
-      fetchToVideo(vidB(), a.video_b_file, $("stateB"), token)
-    ]).then(() => {
-      if (token !== loadToken) return;
-      $("playBtn").disabled = false; $("replayBtn").disabled = false;
-    }).catch(err => {
-      if (token !== loadToken) return;
-      $("watchNote").textContent =
-        "Video failed to load (" + err.message + "). Check your connection and reload the page.";
-      console.error(err);
-    });
-  }
-
   function markWatched(which) {
     if (which === "A") { watchedA = true; $("stateA").textContent = "Watched ✓"; }
     else { watchedB = true; $("stateB").textContent = "Watched ✓"; }
@@ -272,17 +244,10 @@
     $("trackfill").style.width = "100%";
     $("progress").innerHTML = `Done · ${participant}`;
     $("doneCount").textContent = results.filter(r => r.type === "response").length;
-    if (C.endpoint && !failCount) {
-      // normal path: everything uploaded, no backup step for participants
-      $("sendstate").textContent = "All responses uploaded successfully.";
-    } else {
-      // fallback only: no endpoint configured, or some uploads failed
-      $("sendstate").textContent = C.endpoint
-        ? `${failCount} upload(s) failed — please press Retry, then download the backup and send it to the organizer.`
-        : "No server configured — please download the backup and send it to the organizer.";
-      $("dlBtn").classList.remove("hidden");
-      if (failCount) $("retryBtn").classList.remove("hidden");
-    }
+    $("sendstate").textContent = C.endpoint
+      ? (failCount ? `${failCount} upload(s) failed — please press Retry.` : "Server upload complete.")
+      : "No server configured — please send the JSON file to the organizer.";
+    if (failCount) $("retryBtn").classList.remove("hidden");
   }
   $("dlBtn").addEventListener("click", () => {
     const blob = new Blob([JSON.stringify(results, null, 2)], { type: "application/json" });
@@ -294,7 +259,7 @@
   $("retryBtn").addEventListener("click", () => {
     const q = sendQueue.splice(0); failCount = 0;
     q.forEach(r => post(r));
-    $("sendstate").textContent = "Retry attempted. If this message persists, please send the JSON backup.";
+    $("sendstate").textContent = "Retry attempted. Please send the JSON backup as well.";
   });
 
   /* warn before leaving mid-survey */
