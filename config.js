@@ -5,20 +5,26 @@ window.SURVEY_CONFIG = {
   bases: [
     {
         "id": "rolling_forcing",
-        "label": "rolling_forcing",
+        "label": "RollingForcing",
         "prompts": [
             "000_man_made_rocks",
-            "001_man_riding_horse",
-            "002_push_through_ocean"
+            "001_push_through_ocean",
+            "002_white_orange_tabby"
         ]
     },
     {
         "id": "self_forcing",
-        "label": "self_forcing",
+        "label": "SelfForcing",
         "prompts": [
             "000_3d_animation_small",
             "001_beautifully_detailed_papercraft",
-            "002_macro_shot_focusing"
+            "002_close_up_shot",
+            "003_historical_footage_style",
+            "004_hyper_realistic_macro",
+            "005_macro_shot_focusing",
+            "006_nature_photography_style",
+            "007_side_profile_shot",
+            "008_tropical_island_beach"
         ]
     }
 ],
@@ -26,16 +32,23 @@ window.SURVEY_CONFIG = {
   ours_id: "ours",
   baselines: ["vanilla", "teacache", "toca", "fast_ar"],
 
-  video_url: "videos/{base}/{prompt}_{method}.mp4",
+  video_url: "https://huggingface.co/datasets/113bommy/ustudy-a7f3/resolve/main/videos/{base}/{prompt}_{method}.mp4",
 
   prompt_texts: {
     "rolling_forcing/000_man_made_rocks": "A man made of rocks walking in the forest, full-body shot.",
-    "rolling_forcing/001_man_riding_horse": "A man riding a horse through the Gobi Desert with a beautiful sunset behind him, movie quality.",
-    "rolling_forcing/002_push_through_ocean": "A push through an ocean research outpost.",
-    "self_forcing/000_3d_animation_small": "A 3D animation of a small, round, fluffy creature with big, expressive eyes exploring a vibrant, enc",
-    "self_forcing/001_beautifully_detailed_papercraft": "A beautifully detailed papercraft illustration of a vibrant coral reef teeming with colorful fish an",
-    "self_forcing/002_macro_shot_focusing": "A macro shot focusing on the face of a young woman with freckles, her expression intense as she look"
-},
+    "rolling_forcing/001_push_through_ocean": "A push through an ocean research outpost.",
+    "rolling_forcing/002_white_orange_tabby": "A white and orange tabby cat is seen happily darting through a dense garden, as if chasing something. Its eyes are wide and happy as it jogs forward, scanning the branches, flowers, and leaves as it walks. The path is narrow as it makes its way between all the plants. the scene is captured from a ground-level angle, following the cat closely, giving a low and intimate perspective. The image is cinematic with warm tones and a grainy texture. The scattered daylight between the leaves and plants above creates a warm contrast, accentuating the cat’s orange fur. The shot is clear and sharp, with a shallow depth of field.",
+    "self_forcing/000_3d_animation_small": "A 3D animation of a small, round, fluffy creature with big, expressive eyes exploring a vibrant, enchanted forest. The creature, a whimsical blend of a rabbit and a squirrel, has soft blue fur and a bushy, striped tail. It hops along a sparkling stream, its eyes wide with wonder. The forest is alive with magical elements: flowers that glow and change colors, trees with leaves in shades of purple and silver, and small floating lights that resemble fireflies. The creature stops to interact playfully with a group of tiny, fairy-like beings dancing around a mushroom ring. The creature looks up in awe at a large, glowing tree that seems to be the heart of the forest. The scene is rendered in a detailed, fantasy style, with a soft, ethereal lighting that enhances the enchantment. The camera follows the creature as it moves, capturing its playful interactions and the magical ambiance of the forest. A medium shot with a dynamic angle that highlights the creature's expressions and the enchanting environment.",
+    "self_forcing/001_beautifully_detailed_papercraft": "A beautifully detailed papercraft illustration of a vibrant coral reef teeming with colorful fish and sea creatures. The coral formations are intricately designed, with each polyp and branch meticulously crafted. Schools of tropical fish swim gracefully among the corals, their scales shimmering in hues of turquoise, orange, and purple. Sea turtles glide smoothly over the reef, while a school of clownfish dart playfully around an anemone. The background features a soft, pastel-colored ocean with gentle waves and a hint of sunlight breaking through. The entire scene is rendered with a lifelike and textured papercraft style, capturing the essence of a thriving underwater ecosystem. A close-up view from a slightly elevated angle.",
+    "self_forcing/002_close_up_shot": "A close-up shot of a steaming cappuccino in a ceramic cup, with a rich brown foam on top and a slight milk swirl pattern. The cup has a simple yet elegant design, with a white handle and a light brown body. The background is a cozy café with warm lighting, wooden tables, and a few patrons chatting in the corner. The cappuccino is freshly made, with a hint of steam rising from the surface, capturing the essence of a perfect morning beverage.",
+    "self_forcing/003_historical_footage_style": "A historical footage style photograph depicting a bustling gold rush town in California. The scene captures miners panning for gold in a stream, their faces weathered and determined. Behind them, makeshift wooden shacks and tents line the streets, with smoke rising from chimneys. A man in a dusty hat and tattered clothes stands near a sluice box, his hand on his hip, looking out towards the camera with a mix of hope and hardship. The background features rolling hills and dense forests, with a few oxen-drawn wagons in the distance. The photo has a sepia tone and a grainy texture, capturing the essence of the era. A medium shot with a slightly tilted angle.",
+    "self_forcing/004_hyper_realistic_macro": "A hyper-realistic macro photograph capturing the intricate details of a dandelion, zooming in at an incredible speed to reveal a dream-like, abstract world. The petals are softly blurred, creating a mesmerizing effect that blends reality with fantasy. Each fiber and grain of pollen is vividly detailed, giving the image a surreal texture. The background fades into a gradient of soft pastel colors, enhancing the ethereal quality of the scene. The dandelion appears almost otherworldly, with its delicate structure and vibrant colors standing out against the blurred, abstract surroundings. A close-up shot with a dynamic zoom-in motion.",
+    "self_forcing/005_macro_shot_focusing": "A macro shot focusing on the face of a young woman with freckles, her expression intense as she looks intently for something. Her freckles are scattered across her cheeks and nose, adding a playful charm to her face. Her eyes are wide and slightly squinted, peering closely at the object of her search. Her hair is loose, framing her face gently, with strands falling over her forehead. The background is blurred, but you can make out the faint outline of a table or desk where she is searching.",
+    "self_forcing/006_nature_photography_style": "A nature photography style photo capturing a family of orangutans along the Kinabatangan River in Borneo. The mother orangutan, with long reddish-brown fur and expressive brown eyes, is holding her baby tightly. The baby orangutan, with smaller size and lighter fur, is clinging to its mother’s chest, both gazing curiously at the camera. The father orangutan, larger and more muscular, is standing nearby, looking contemplative. The riverbank is lush with green foliage, and the water reflects the surrounding tropical rainforest. The photo has a vivid and naturalistic style, with the orangutans in focus against a slightly blurred background of dense jungle. A medium shot from a slightly elevated angle, capturing the interaction between the family.",
+    "self_forcing/007_side_profile_shot": "A side profile shot of a woman with a dramatic backdrop of fireworks exploding in the distance. The woman has long flowing hair cascading down her back, and she gazes intently into the distance, her expression filled with a mix of wonder and excitement. She wears a elegant red dress with intricate lace detailing and a fitted bodice. The fireworks create a vibrant display of colors and light, casting a magical glow on her face. The background is blurred, capturing the burst of colors and smoke from the explosions. The photo has a dynamic and celebratory atmosphere. A medium shot with a slight tilt to the camera angle.",
+    "self_forcing/008_tropical_island_beach": "A tropical island beach scene in a vibrant and lively illustration style, featuring a corgi wearing stylish sunglasses walking along the sandy shore. The corgi has a playful expression, its fur glistening in the bright sunlight. It strides confidently, its tail wagging as it explores the soft sand. The background showcases a clear turquoise sea with palm trees swaying gently in the breeze. A few seagulls fly overhead, adding to the serene yet lively atmosphere. The corgi’s sunglasses add a touch of whimsy and fun to the scene. A medium shot with the corgi at the center, captured from a slightly elevated angle."
+  },
+
 
   axes: [
     { id: "overall",  label: "Overall",
