@@ -244,10 +244,17 @@
     $("trackfill").style.width = "100%";
     $("progress").innerHTML = `Done · ${participant}`;
     $("doneCount").textContent = results.filter(r => r.type === "response").length;
-    $("sendstate").textContent = C.endpoint
-      ? (failCount ? `${failCount} upload(s) failed — please press Retry.` : "Server upload complete.")
-      : "No server configured — please send the JSON file to the organizer.";
-    if (failCount) $("retryBtn").classList.remove("hidden");
+    if (C.endpoint && !failCount) {
+      // normal path: everything uploaded, no backup step for participants
+      $("sendstate").textContent = "All responses uploaded successfully.";
+    } else {
+      // fallback only: no endpoint configured, or some uploads failed
+      $("sendstate").textContent = C.endpoint
+        ? `${failCount} upload(s) failed — please press Retry, then download the backup and send it to the organizer.`
+        : "No server configured — please download the backup and send it to the organizer.";
+      $("dlBtn").classList.remove("hidden");
+      if (failCount) $("retryBtn").classList.remove("hidden");
+    }
   }
   $("dlBtn").addEventListener("click", () => {
     const blob = new Blob([JSON.stringify(results, null, 2)], { type: "application/json" });
@@ -259,7 +266,7 @@
   $("retryBtn").addEventListener("click", () => {
     const q = sendQueue.splice(0); failCount = 0;
     q.forEach(r => post(r));
-    $("sendstate").textContent = "Retry attempted. Please send the JSON backup as well.";
+    $("sendstate").textContent = "Retry attempted. If this message persists, please send the JSON backup.";
   });
 
   /* warn before leaving mid-survey */
