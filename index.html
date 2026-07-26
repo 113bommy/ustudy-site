@@ -118,7 +118,7 @@
   <!-- 1. entry -->
   <section id="entry" class="card">
     <h2>Instructions</h2>
-    <p>You will compare pairs of videos (A / B) generated from the same prompt, and choose the better one for each criterion. There are <b id="totalPairs"></b> comparisons in total (about 30&ndash;40 minutes).</p>
+    <p>You will compare pairs of videos (A / B) generated from the same prompt, and choose the better one for each criterion. There are <b id="totalPairs"></b> comparisons in total (about 40&ndash;50 minutes).</p>
     <ul class="rules">
       <li><b>Please use Google Chrome.</b> Other browsers may not play the videos correctly.</li>
       <li>Watch both videos before answering. You may replay them as many times as you like.</li>
@@ -126,10 +126,19 @@
       <li>Even if the two videos look similar, <b>you must choose one</b>. If the difference is small, pick the one that is even slightly better.</li>
       <li>Submitted answers cannot be changed.</li>
     </ul>
-    <label class="field" for="pid">Your email address (used as your participant ID)</label>
+    <label class="field" for="pid">Your email address (used as your participant ID and for the reward)</label>
     <input id="pid" class="mono" type="email" autocomplete="email" spellcheck="false" placeholder="name@example.com">
-    <p style="font-size:.8rem; color:var(--muted); margin-top:6px;">Your email is used only to identify your responses and to send the reward after completion. It will not be shared or used for any other purpose.</p>
+    <p style="font-size:.8rem; color:var(--muted); margin-top:6px;">Your email is used only to identify your responses. Your name and bank account details are used solely to transfer the reward after completion, and will be deleted after payment.</p>
     <p id="pidError" style="font-size:.82rem; color:var(--warn); margin-top:4px;" class="hidden">Please enter a valid email address.</p>
+    <div style="margin-top:14px; display:grid; gap:10px; max-width:420px;">
+      <div><label class="field" for="rwName">Account holder name (예금주)</label>
+        <input id="rwName" type="text" autocomplete="name" style="width:100%; font-size:.95rem; padding:8px 12px; border:1px solid var(--line); border-radius:8px;"></div>
+      <div><label class="field" for="rwBank">Bank (은행명)</label>
+        <input id="rwBank" type="text" style="width:100%; font-size:.95rem; padding:8px 12px; border:1px solid var(--line); border-radius:8px;"></div>
+      <div><label class="field" for="rwAccount">Account number (계좌번호)</label>
+        <input id="rwAccount" class="mono" type="text" inputmode="numeric" style="width:100%; font-size:.95rem; padding:8px 12px; border:1px solid var(--line); border-radius:8px;"></div>
+      <p id="rwError" style="font-size:.82rem; color:var(--warn);" class="hidden">Please fill in all payment fields.</p>
+    </div>
     <div class="controls"><button id="startBtn">Start</button></div>
   </section>
 
@@ -165,7 +174,7 @@
   <section id="done" class="card hidden">
     <h2>All done &mdash; thank you!</h2>
     <p><b id="doneCount"></b> responses have been submitted. You may now close this page.</p>
-    <p>After we verify your responses, the reward will be sent to the email address you entered. No further action is needed.</p>
+    <p>After we verify your responses, the reward will be transferred to the bank account you provided. No further action is needed — you may now close this page.</p>
     <div id="sendstate" class="mono"></div>
     <div class="controls">
       <button id="dlBtn" class="hidden">Download responses (JSON backup)</button>

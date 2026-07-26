@@ -133,9 +133,16 @@
       $("pidError").classList.remove("hidden"); $("pid").focus(); return;
     }
     $("pidError").classList.add("hidden");
+    const name = $("rwName").value.trim(), bank = $("rwBank").value.trim(),
+          account = $("rwAccount").value.trim();
+    if (!name || !bank || !account) { $("rwError").classList.remove("hidden"); return; }
+    $("rwError").classList.add("hidden");
     participant = pid;
     assignment = makeAssignment(pid);
     logManifest();
+    // 지급 정보는 응답과 분리된 record로 전송 → 시트의 rewards 탭에 저장
+    post({ type: "reward", study_id: C.study_id, participant,
+           ts: new Date().toISOString(), name, bank, account });
     $("entry").classList.add("hidden");
     $("question").classList.remove("hidden");
     renderAxes();
