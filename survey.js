@@ -125,6 +125,16 @@
 
   /* ---------- UI: entry ---------- */
   $("totalPairs").textContent = buildPairs().length;
+
+  /* 작은 화면에서는 화질 비교 판단이 어려우므로 데스크톱을 권장 (차단은 안 함) */
+  (function mobileAdvice() {
+    if (!(/Android|Mobile|iPhone|iPad/.test(navigator.userAgent) || window.innerWidth < 700)) return;
+    const note = document.createElement("p");
+    note.style.cssText = "color:var(--warn); font-weight:600; margin-top:12px; font-size:.9rem;";
+    note.textContent = "For accurate judgments, a desktop or laptop is strongly recommended. " +
+      "(정확한 평가를 위해 PC 참여를 강력히 권장합니다.)";
+    $("startBtn").parentElement.before(note);
+  })();
   $("startBtn").addEventListener("click", () => {
     // 이메일을 참가자 ID로 사용: 정규화(공백 제거+소문자)로 표기 편차에 의한
     // 시드/중복 문제를 방지하고, 간단한 형식 검증을 거친다.
@@ -198,8 +208,16 @@
     const pt = (C.prompt_texts || {})[`${a.base}/${a.prompt}`] || "";
     $("promptText").textContent = pt ? `“${pt}”` : "";
 
-    loadWithRetry(vidA(), a.video_a_file, $("stateA"));
-    loadWithRetry(vidB(), a.video_b_file, $("stateB"));
+    loadToken++;
+    const pA = loadVideo(vidA(), a.video_a_file, $("stateA"));
+    const pB = loadVideo(vidB(), a.video_b_file, $("stateB"));
+    if (USE_BLOB) {
+      $("playBtn").disabled = true; $("replayBtn").disabled = true;
+      const tk = loadToken;
+      Promise.all([pA, pB]).then(() => {
+        if (tk === loadToken) { $("playBtn").disabled = false; $("replayBtn").disabled = false; }
+      });
+    }
     watchedA = !C.require_full_watch;
     watchedB = !C.require_full_watch;
     $("watchNote").textContent = C.require_full_watch
@@ -212,8 +230,54 @@
     tStart = Date.now();
     window.scrollTo({ top: 0 });
   }
+  /* ── 브라우저별 영상 로딩 분기 ──
+     데스크톱 Safari와 iOS의 모든 브라우저(WebKit 강제)는 <video>의 미디어 로더가
+     HF의 서명된 CDN 리다이렉트를 403으로 실패시키므로, 해당 환경에서만
+     fetch→blob 방식으로 로드한다. Chrome 등 나머지는 기존 직접 스트리밍 유지. */
+  const UA = navigator.userAgent;
+  const IS_IOS = /iPad|iPhone|iPod/.test(UA) ||
+                 (UA.includes("Mac") && navigator.maxTouchPoints > 1);
+  const IS_SAFARI = /Safari/.test(UA) && !/Chrome|Chromium|CriOS|Edg|OPR/.test(UA);
+  const USE_BLOB = IS_IOS || IS_SAFARI;
+  let loadToken = 0;
+
+  async function loadBlob(videoEl, url, stateEl, token) {
+    for (let attempt = 0; attempt <= MAX_RETRY; attempt++) {
+      try {
+        if (attempt) {
+          stateEl.textContent = `Retrying (${attempt}/${MAX_RETRY})…`;
+          await new Promise(r => setTimeout(r, 1500 * attempt));
+        }
+        const bust = attempt ? (url.includes("?") ? "&" : "?") + "r=" + attempt : "";
+        const resp = await fetch(url + bust);
+        if (!resp.ok) throw new Error("HTTP " + resp.status);
+        const blob = await resp.blob();
+        if (token !== loadToken) return;
+        if (videoEl._objUrl) URL.revokeObjectURL(videoEl._objUrl);
+        videoEl._objUrl = URL.createObjectURL(blob);
+        videoEl.src = videoEl._objUrl;
+        stateEl.textContent = "Ready";
+        return;
+      } catch (e) {
+        if (token !== loadToken) return;
+        if (attempt === MAX_RETRY) {
+          stateEl.textContent = "Load failed";
+          $("watchNote").textContent =
+            "A video failed to load after several retries — press \"Replay from start\" to try again, or reload the page.";
+        }
+      }
+    }
+  }
+
+  function loadVideo(videoEl, url, stateEl) {
+    videoEl._srcUrl = url;
+    if (!USE_BLOB) { loadWithRetry(videoEl, url, stateEl); return Promise.resolve(); }
+    stateEl.textContent = "Loading…";
+    return loadBlob(videoEl, url, stateEl, loadToken);
+  }
+
   /* HF CDN이 간헐적으로 503을 반환할 수 있어, 영상 로드 실패 시
-     지수 백오프로 최대 3회 자동 재시도한다. */
+     지수 백오프로 최대 3회 자동 재시도한다. (직접 스트리밍 경로) */
   const MAX_RETRY = 3;
   function loadWithRetry(videoEl, url, stateEl) {
     videoEl._retries = 0;
@@ -259,7 +323,7 @@
   $("replayBtn").addEventListener("click", () => {
     for (const [v, st] of [[vidA(), $("stateA")], [vidB(), $("stateB")]]) {
       if (v.error || st.textContent === "Load failed") {
-        loadWithRetry(v, v._srcUrl, st);          // 실패한 쪽은 처음부터 재로드
+        loadVideo(v, v._srcUrl, st);              // 실패한 쪽은 브라우저별 로더로 재로드
       } else {
         v.currentTime = 0; v.play();
       }
